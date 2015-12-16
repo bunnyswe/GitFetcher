@@ -1,3 +1,4 @@
+#!/usr/bin/python -u
 # -*- coding: utf-8 *-*
 
 '''
@@ -48,12 +49,13 @@ def cloneProject(repo):
 def main(args=()):
     if len(args) == 2:
         workingpath = args[0]
+        repo = args[1]
     elif len(args) == 1:
-        workingpath = "."
+        workingpath = os.path.expanduser('~')
+        repo = args[0]
     else:
         print('args error \n\nusages: python gitc.py working_path path_to_repo')
         return
-    repo = args[1]
 
     if not os.path.exists(workingpath):
         os.mkdir(workingpath)
