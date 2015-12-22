@@ -72,4 +72,4 @@ def download(working_path, url):
 
 
 ourl = "http://jcenter.bintray.com/com/android/databinding/"
-fetch("hehe",ourl)
+fetch("storage",ourl)
