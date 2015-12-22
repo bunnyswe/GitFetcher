@@ -44,7 +44,7 @@ class RecursiveParser(HTMLParser):
             self.mark = False
 
 
-def fetch(url):
+def fetch(working_path, url):
     req = urllib2.Request(url)
     resp = urllib2.urlopen(req)
     content_type = str(resp.headers['content-type'])
@@ -52,16 +52,16 @@ def fetch(url):
         html_parser = RecursiveParser()
         html_parser.feed(str((resp.read())))
         for p in html_parser.result:
-            fetch(url + p)
+            fetch(working_path, url + p)
     else:
-        download(url)
+        download(working_path, url)
 
 
-def download(url):
+def download(working_path, url):
     dirname = str(url).split("://")[1]
     filename = dirname[dirname.rindex('/') + 1:]
-    dirname = dirname[:dirname.rindex('/') + 1]
-
+    dirname = dirname[dirname.index('/') + 1:dirname.rindex('/') + 1]
+    dirname = working_path + os.path.sep + dirname
     if not os.path.exists(dirname):
         os.makedirs(dirname)
     if not os.path.exists(dirname + filename):
@@ -71,5 +71,5 @@ def download(url):
         print "skip >>>> ", dirname, filename
 
 
-ourl = "http://jcenter.bintray.com/com/android/tools/build/"
-fetch(ourl)
+ourl = "http://jcenter.bintray.com/com/android/databinding/"
+fetch("hehe",ourl)
