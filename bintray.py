@@ -15,7 +15,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 '''
-
+import argparse
 import os
 import urllib
 import urllib2
@@ -44,7 +44,7 @@ class RecursiveParser(HTMLParser):
             self.mark = False
 
 
-def fetch(working_path, url):
+def fetch(target_path, url):
     req = urllib2.Request(url)
     resp = urllib2.urlopen(req)
     content_type = str(resp.headers['content-type'])
@@ -52,16 +52,16 @@ def fetch(working_path, url):
         html_parser = RecursiveParser()
         html_parser.feed(str((resp.read())))
         for p in html_parser.result:
-            fetch(working_path, url + p)
+            fetch(target_path, url + p)
     else:
-        download(working_path, url)
+        download(target_path, url)
 
 
-def download(working_path, url):
+def download(target_path, url):
     dirname = str(url).split("://")[1]
     filename = dirname[dirname.rindex('/') + 1:]
     dirname = dirname[dirname.index('/') + 1:dirname.rindex('/') + 1]
-    dirname = working_path + os.path.sep + dirname
+    dirname = target_path + os.path.sep + dirname
     if not os.path.exists(dirname):
         os.makedirs(dirname)
     if not os.path.exists(dirname + filename):
@@ -71,5 +71,19 @@ def download(working_path, url):
         print "skip >>>> ", dirname, filename
 
 
-ourl = "http://jcenter.bintray.com/com/android/databinding/"
-fetch("storage",ourl)
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Tool to fetch files from jcenter.bintray.com')
+    parser.add_argument(
+        '-d',
+        dest='dir',
+        action='store',
+        default=os.path.curdir,
+        help='target directory, current for default')
+    parser.add_argument('src', nargs='?',
+                        help='remote url path to fetch from, e.g. "http://jcenter.bintray.com/com/android/databinding/"')
+    args = parser.parse_args()
+    ourl = args.src
+    if (ourl):
+        fetch(args.dir, ourl)
+    else:
+        parser.print_help()
