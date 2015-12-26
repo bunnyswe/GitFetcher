@@ -16,9 +16,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 '''
-
+import argparse
 import os.path
-import sys
 
 __author__ = 'naitiz'
 
@@ -37,31 +36,32 @@ def cloneProject(repo):
     dirname, projectname = parseRepo(repo)
     if not os.path.exists(dirname):
         os.makedirs(dirname)
-    full_path = dirname + os.path.sep + projectname
+    full_path =os.getcwd() + os.path.sep + dirname + os.path.sep + projectname
     if not os.path.exists(full_path):
-        print("Cloning " + repo + " into " + os.getcwd() + os.path.sep + dirname)
+        print("Cloning " + repo + " into " + full_path)
         os.system("cd " + dirname + ";git clone " + repo + " --recursive")
     else:
-        print("Pulling " + dirname + os.path.sep + projectname)
-        os.system("cd " + dirname + os.path.sep + projectname + ";git pull")
-
-
-def main(args=()):
-    if len(args) == 2:
-        workingpath = args[0]
-        repo = args[1]
-    elif len(args) == 1:
-        workingpath = os.path.expanduser('~')
-        repo = args[0]
-    else:
-        print('args error \n\nusages: python gitc.py working_path path_to_repo')
-        return
-
-    if not os.path.exists(workingpath):
-        os.mkdir(workingpath)
-    os.chdir(workingpath)
-    cloneProject(repo)
+        print("Pulling " + full_path)
+        os.system("cd " + full_path + ";git pull")
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    parser = argparse.ArgumentParser(description='faster clone from git, for lazy guys')
+    parser.add_argument(
+        '-d',
+        dest='dir',
+        action='store',
+        default=os.path.expanduser('~'),
+        help='target directory, "user home" for default')
+    parser.add_argument('repo', nargs='?',
+                        help='remote repo path to clone from, http(s) and git path both support, if local repo exists, git pull instead')
+    args = parser.parse_args()
+    workingpath = args.dir
+    repo = args.repo
+    if (repo):
+        if not os.path.exists(workingpath):
+            os.mkdir(workingpath)
+        os.chdir(workingpath)
+        cloneProject(repo)
+    else:
+        parser.print_help()
