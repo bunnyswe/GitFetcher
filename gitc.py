@@ -29,7 +29,7 @@ def parseRepo(repo):
     repo = repo.replace("/", "\t")
     repo = repo.replace(".git", "")
     result = repo.split("\t")
-    return os.path.sep.join(result[1:3]), result[3]
+    return os.path.sep.join(result[1:-1]), result[-1]
 
 
 def cloneProject(repo):
