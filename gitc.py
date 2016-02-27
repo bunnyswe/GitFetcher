@@ -32,17 +32,24 @@ def parseRepo(repo):
     return os.path.sep.join(result[1:-1]), result[-1]
 
 
-def cloneProject(repo):
+def cloneProject(repo, workingpath=os.path.expanduser('~')):
+    set_working_path(workingpath)
     dirname, projectname = parseRepo(repo)
     if not os.path.exists(dirname):
         os.makedirs(dirname)
-    full_path =os.getcwd() + os.path.sep + dirname + os.path.sep + projectname
+    full_path = os.getcwd() + os.path.sep + dirname + os.path.sep + projectname
     if not os.path.exists(full_path):
         print("Cloning " + repo + " into " + full_path)
         os.system("cd " + dirname + ";git clone " + repo + " --recursive")
     else:
         print("Pulling " + full_path)
         os.system("cd " + full_path + ";git pull")
+
+
+def set_working_path(workingpath):
+    if not os.path.exists(workingpath):
+        os.mkdir(workingpath)
+    os.chdir(workingpath)
 
 
 if __name__ == '__main__':
@@ -59,9 +66,6 @@ if __name__ == '__main__':
     workingpath = args.dir
     repo = args.repo
     if (repo):
-        if not os.path.exists(workingpath):
-            os.mkdir(workingpath)
-        os.chdir(workingpath)
-        cloneProject(repo)
+        cloneProject(repo, workingpath)
     else:
         parser.print_help()
