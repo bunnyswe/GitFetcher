@@ -17,7 +17,10 @@
    limitations under the License.
 '''
 import argparse
+import commands
 import os.path
+
+import pexpect
 
 __author__ = 'naitiz'
 
@@ -32,6 +35,15 @@ def parseRepo(repo):
     return os.path.sep.join(result[1:-1]), result[-1]
 
 
+def interact(cmd):
+    a = commands.getoutput('echo $SHELL')
+    shell = pexpect.spawn(a)
+    shell.expect('$')
+    shell.sendline(cmd)
+    shell.interact()
+    return shell
+
+
 def cloneProject(repo, workingpath=os.path.expanduser('~')):
     set_working_path(workingpath)
     dirname, projectname = parseRepo(repo)
@@ -44,6 +56,7 @@ def cloneProject(repo, workingpath=os.path.expanduser('~')):
     else:
         print("Pulling " + full_path)
         os.system("cd " + full_path + ";git pull")
+    interact('cd ' + full_path)
 
 
 def set_working_path(workingpath):
