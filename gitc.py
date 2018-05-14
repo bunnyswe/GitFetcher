@@ -44,7 +44,7 @@ def interact(cmd):
     return shell
 
 
-def cloneProject(repo, workingpath=os.path.expanduser('~')):
+def cloneProject(repo, cdinto=True, workingpath=os.path.expanduser('~')):
     set_working_path(workingpath)
     dirname, projectname = parseRepo(repo)
     if not os.path.exists(dirname):
@@ -56,7 +56,8 @@ def cloneProject(repo, workingpath=os.path.expanduser('~')):
     else:
         print("Pulling " + full_path)
         os.system("cd " + full_path + ";git pull")
-    interact('cd ' + full_path)
+    if cdinto:
+        interact('cd ' + full_path)
 
 
 def set_working_path(workingpath):
@@ -75,10 +76,16 @@ if __name__ == '__main__':
         help='target directory, "user home" for default')
     parser.add_argument('repo', nargs='?',
                         help='remote repo path to clone from, http(s) and git path both support, if local repo exists, git pull instead')
+    parser.add_argument(
+        '-n',
+        dest='cdinto',
+        action='store_false',
+        help='cd into dir')
     args = parser.parse_args()
     workingpath = args.dir
     repo = args.repo
+    cdinto = args.cdinto
     if (repo):
-        cloneProject(repo, workingpath)
+        cloneProject(repo, cdinto, workingpath)
     else:
         parser.print_help()
